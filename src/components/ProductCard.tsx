@@ -1,5 +1,12 @@
 import React from 'react';
-import { Plus, Minus, Star } from 'lucide-react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 import { Product, CartItem } from '../types';
 import { useApp } from '../context/AppContext';
 
@@ -23,71 +30,186 @@ export function ProductCard({ product, cartItem }: ProductCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
-      <div className="relative">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="w-full h-48 object-cover"
-        />
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: product.image }} style={styles.image} />
         {product.discount && (
-          <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-            {product.discount}% OFF
-          </div>
+          <View style={styles.discountBadge}>
+            <Text style={styles.discountText}>{product.discount}% OFF</Text>
+          </View>
         )}
-      </div>
+      </View>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-2">{product.name}</h3>
-        <p className="text-sm text-gray-600 mb-2">{product.unit}</p>
+      <View style={styles.content}>
+        <Text style={styles.name} numberOfLines={2}>{product.name}</Text>
+        <Text style={styles.unit}>{product.unit}</Text>
         
         {product.rating && (
-          <div className="flex items-center mb-2">
-            <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm text-gray-600 ml-1">{product.rating}</span>
-          </div>
+          <View style={styles.ratingContainer}>
+            <Icon name="star" size={14} color="#fbbf24" />
+            <Text style={styles.rating}>{product.rating}</Text>
+          </View>
         )}
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="font-bold text-lg text-gray-900">₹{product.price}</span>
+        <View style={styles.footer}>
+          <View style={styles.priceContainer}>
+            <Text style={styles.price}>₹{product.price}</Text>
             {product.originalPrice && (
-              <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+              <Text style={styles.originalPrice}>₹{product.originalPrice}</Text>
             )}
-          </div>
+          </View>
 
           {cartItem ? (
-            <div className="flex items-center space-x-2 bg-green-100 rounded-lg px-3 py-1">
-              <button
-                onClick={() => handleUpdateQuantity(cartItem.quantity - 1)}
-                className="text-green-600 hover:text-green-700 transition-colors"
+            <View style={styles.quantityContainer}>
+              <TouchableOpacity
+                onPress={() => handleUpdateQuantity(cartItem.quantity - 1)}
+                style={styles.quantityButton}
               >
-                <Minus className="h-4 w-4" />
-              </button>
-              <span className="font-semibold text-green-700 px-2">{cartItem.quantity}</span>
-              <button
-                onClick={() => handleUpdateQuantity(cartItem.quantity + 1)}
-                className="text-green-600 hover:text-green-700 transition-colors"
+                <Icon name="minus" size={16} color="#22c55e" />
+              </TouchableOpacity>
+              <Text style={styles.quantity}>{cartItem.quantity}</Text>
+              <TouchableOpacity
+                onPress={() => handleUpdateQuantity(cartItem.quantity + 1)}
+                style={styles.quantityButton}
               >
-                <Plus className="h-4 w-4" />
-              </button>
-            </div>
+                <Icon name="plus" size={16} color="#22c55e" />
+              </TouchableOpacity>
+            </View>
           ) : (
-            <button
-              onClick={handleAddToCart}
+            <TouchableOpacity
+              onPress={handleAddToCart}
               disabled={!product.inStock}
-              className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center space-x-1"
+              style={[styles.addButton, !product.inStock && styles.disabledButton]}
             >
-              <Plus className="h-4 w-4" />
-              <span className="text-sm font-medium">Add</span>
-            </button>
+              <Icon name="plus" size={16} color="#fff" />
+              <Text style={styles.addButtonText}>Add</Text>
+            </TouchableOpacity>
           )}
-        </div>
+        </View>
 
         {!product.inStock && (
-          <p className="text-red-500 text-sm mt-2">Out of stock</p>
+          <Text style={styles.outOfStock}>Out of stock</Text>
         )}
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    margin: 8,
+    overflow: 'hidden',
+  },
+  imageContainer: {
+    position: 'relative',
+  },
+  image: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+  discountBadge: {
+    position: 'absolute',
+    top: 8,
+    left: 8,
+    backgroundColor: '#ef4444',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  discountText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: 'bold',
+  },
+  content: {
+    padding: 12,
+  },
+  name: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#111',
+    marginBottom: 4,
+  },
+  unit: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 8,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  rating: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 4,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#111',
+  },
+  originalPrice: {
+    fontSize: 12,
+    color: '#999',
+    textDecorationLine: 'line-through',
+    marginLeft: 8,
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#dcfce7',
+    borderRadius: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  quantityButton: {
+    padding: 4,
+  },
+  quantity: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#16a34a',
+    marginHorizontal: 12,
+  },
+  addButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#22c55e',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  disabledButton: {
+    backgroundColor: '#d1d5db',
+  },
+  addButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  outOfStock: {
+    color: '#ef4444',
+    fontSize: 12,
+    marginTop: 8,
+  },
+});

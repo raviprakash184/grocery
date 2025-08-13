@@ -48,3 +48,14 @@ export interface Order {
   orderDate: string;
   deliveryTime: string;
 }
+
+export type RootStackParamList = {
+  Home: undefined;
+  Products: undefined;
+  Category: { categoryId: string };
+  Cart: undefined;
+  Checkout: undefined;
+  Profile: undefined;
+  Orders: undefined;
+  Search: undefined;
+};
